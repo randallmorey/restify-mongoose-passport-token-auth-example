@@ -1,0 +1,11 @@
+{
+  "name": "restify-auth-boilerplate",
+  "version": "0.0.0",
+  "dependencies": {
+    "coffee-script": "",
+    "restify": ""
+  },
+  "scripts": {
+    "start": "./node_modules/coffee-script/bin/coffee app.coffee"
+  }
+}
