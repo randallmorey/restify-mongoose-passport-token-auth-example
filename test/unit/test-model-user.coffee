@@ -11,7 +11,7 @@ describe 'User', ->
     it 'should fail on missing email', (done) ->
       user = new User password: 'testing1234!'
       user.validate (err) ->
-        assert.equal err.errors.email.type, 'required', 'error type is required'
+        assert.equal err.errors.email.type, 'required', 'email is required'
         done()
     it 'should fail on invalid email', (done) ->
       user = new User email: 'test@test', password: 'test1234'
@@ -48,20 +48,20 @@ describe 'User', ->
         assert.isUndefined user.password, 'password does not exist'
         done()
   describe 'password_hash', ->
-    it 'should exist after successful validate', (done) ->
+    it 'should exist after validate', (done) ->
       user = new User email: 'test@test.com', password: 'test1234'
       user.validate ->
         assert.isString user.password_hash, 'password_hash exists'
         done()
-  describe 'compare_password', ->
-    it 'should match when plaintext password and password hash match', (done) ->
+  describe 'comparePassword', ->
+    it 'should match when password and password_hash match', (done) ->
       user = new User email: 'test@test.com', password: 'test1234'
       user.validate (err) ->
         user.comparePassword 'test1234', (err, isMatch) ->
           throw err if err
           assert.equal isMatch, true, 'passwords match'
           done()
-    it 'should not match when plaintext password and password hash do not match', (done) ->
+    it 'should not match when password and password_hash do not match', (done) ->
       user = new User email: 'test@test.com', password: '1234test'
       user.validate (err) ->
         user.comparePassword 'test1234', (err, isMatch) ->
