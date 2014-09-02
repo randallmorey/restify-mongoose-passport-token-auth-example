@@ -25,11 +25,7 @@ TokenSchema = mongoose.Schema
     type: Date
     required: true
     default: ->
-      tokenExpirationTimeout =
-        if process.env.TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS
-          parseInt process.env.TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS, 10
-        else
-          1 * 24 * 60 * 60 * 1000
+      tokenExpirationTimeout = parseInt process.env.TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS, 10
       Date.now() + tokenExpirationTimeout
 
 TokenSchema.pre 'validate', (next) ->
@@ -44,9 +40,8 @@ TokenSchema.pre 'validate', (next) ->
   else
     next()
 
-TokenSchema.pre 'save', (next) ->
+TokenSchema.post 'validate', ->
   @token_string = undefined
-  next()
 
 TokenSchema.methods.isExpired = (next) ->
   expirationTime = @expires_on.getTime()

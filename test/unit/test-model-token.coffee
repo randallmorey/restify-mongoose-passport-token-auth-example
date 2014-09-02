@@ -5,6 +5,7 @@ dotenv.load()
 
 describe 'Token', ->
   Token = require '../../app/models/Token'
+  tokenExpirationTimeout = parseInt process.env.TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS, 10
   describe 'defaults', ->
     it 'should include a 128-character token_string', ->
       token = new Token
@@ -40,6 +41,19 @@ describe 'Token', ->
       token.validate (err) ->
         assert.equal err.errors.expires_on.type, 'required', 'expires_on is required'
         done()
+  describe 'token_string', ->
+    it 'should not exist after successful validate', (done) ->
+      token = new Token
+      token.validate (err) ->
+        assert.isUndefined err, 'validation successful'
+        assert.isUndefined token.token_string, 'token_string does not exist'
+        done()
+    it 'should not exist after failed validate', (done) ->
+      token = new Token created_on: null
+      token.validate (err) ->
+        assert.equal err.errors.created_on.type, 'required', 'created_on is required'
+        assert.isUndefined token.token_string, 'token_string does not exist'
+        done()
   describe 'token_hash', ->
     it 'should exist after validate', (done) ->
       token = new Token
@@ -63,6 +77,34 @@ describe 'Token', ->
           throw err if err
           assert.equal isMatch, false, 'tokens do not match'
           done()
+    it 'should not match when token_string and token_hash match and token is expired', (done) ->
+      token = new Token
+      token_string = token.token_string
+      token.validate (err) ->
+        token.compareToken token_string, (err, isMatch) ->
+          throw err if err
+          assert.equal isMatch, true, 'tokens match'
+          setTimeout (->
+            token.compareToken token_string, (err, isMatch) ->
+              throw err if err
+              assert.equal token.isExpired(), true, 'isExpired returns true'
+              assert.equal isMatch, false, 'tokens do not match'
+              done()
+          ), tokenExpirationTimeout
+    it 'should not match when token_string and token_hash do not match and token is expired', (done) ->
+      token = new Token
+      token_string = 'some random non-token string'
+      token.validate (err) ->
+        token.compareToken token_string, (err, isMatch) ->
+          throw err if err
+          assert.equal isMatch, false, 'tokens do not match'
+          setTimeout (->
+            token.compareToken token_string, (err, isMatch) ->
+              throw err if err
+              assert.equal token.isExpired(), true, 'isExpired returns true'
+              assert.equal isMatch, false, 'tokens do not match'
+              done()
+          ), tokenExpirationTimeout
   describe 'isExpired', ->
     it 'should return false before expires_on', ->
       token = new Token
@@ -71,7 +113,6 @@ describe 'Token', ->
     it 'should return true after expires_on', (done) ->
       token = new Token
       assert.isDefined process.env.TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS, 'TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS environment variable is defined'
-      tokenExpirationTimeout = parseInt process.env.TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS, 10
       assert.ok tokenExpirationTimeout < 2000, 'token expiration timeout is less than 2000 ms'
       setTimeout (->
         assert.ok token.expires_on.getTime() < Date.now(), 'expires_on is in the past'
