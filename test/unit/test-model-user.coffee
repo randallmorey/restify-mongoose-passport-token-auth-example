@@ -2,7 +2,17 @@ assert = require('chai').assert
 
 describe 'User', ->
   User = require '../../app/models/User'
+  describe 'defaults', ->
+    it 'should include an active boolean that defaults to true', ->
+      user = new User
+      assert.equal typeof user.active, 'boolean', 'active is a boolean'
+      assert.equal user.active, true, 'active is true by default'
+    it 'should include a created_on date', ->
+      user = new User
+      assert.ok user.created_on instanceof Date, 'created_on is an Date'
   describe 'validate', ->
+    #it 'should not pass when no values are specified', (done) ->
+    #  # TODO
     it 'should pass on valid email and password', (done) ->
       user = new User email: 'test@test.com', password: 'test1234'
       user.validate (err) ->

@@ -17,6 +17,14 @@ UserSchema = mongoose.Schema
   password_hash:
     type: String
     required: true
+  active:
+    type: Boolean
+    default: true
+    required: true
+  created_on:
+    type: Date
+    required: true
+    default: Date.now
 
 UserSchema.pre 'validate', (next) ->
   saltWorkFactor = 5
