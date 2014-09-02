@@ -62,7 +62,7 @@ describe 'User', ->
           assert.equal isMatch, true, 'passwords match'
           done()
     it 'should not match when password and password_hash do not match', (done) ->
-      user = new User email: 'test@test.com', password: '1234test'
+      user = new User email: 'test@test.com', password: 'myfunrandompasswordstring098767512894703256'
       user.validate (err) ->
         user.comparePassword 'test1234', (err, isMatch) ->
           throw err if err
