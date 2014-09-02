@@ -2,18 +2,22 @@
   "name": "restify-auth-boilerplate",
   "version": "0.0.0",
   "dependencies": {
+    "bcrypt": "",
     "coffee-script": "",
     "dotenv": "",
-    "bcrypt": "",
     "mongoose": "",
     "restify": ""
   },
   "devDependencies": {
     "mocha": "",
-    "chai": ""
+    "chai": "",
+    "mocha-lcov-reporter": "",
+    "coffee-coverage": "",
+    "coveralls": ""
   },
   "scripts": {
     "start": "./node_modules/coffee-script/bin/coffee app.coffee",
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha --compilers coffee:coffee-script/register test/**/*.coffee"
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha --compilers coffee:coffee-script/register test/unit/",
+    "test-coverage": "NODE_ENV=test ./node_modules/.bin/mocha --require test/coverage.coffee --reporter mocha-lcov-reporter --compilers coffee:coffee-script/register test/unit/ | ./node_modules/coveralls/bin/coveralls.js"
   }
 }
