@@ -44,9 +44,8 @@ TokenSchema.pre 'validate', (next) ->
   else
     next()
 
-TokenSchema.pre 'save', (next) ->
+TokenSchema.post 'validate', ->
   @token_string = undefined
-  next()
 
 TokenSchema.methods.isExpired = (next) ->
   expirationTime = @expires_on.getTime()

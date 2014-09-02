@@ -41,6 +41,19 @@ describe 'Token', ->
       token.validate (err) ->
         assert.equal err.errors.expires_on.type, 'required', 'expires_on is required'
         done()
+  describe 'token_string', ->
+    it 'should not exist after successful validate', (done) ->
+      token = new Token
+      token.validate (err) ->
+        assert.isUndefined err, 'validation successful'
+        assert.isUndefined token.token_string, 'token_string does not exist'
+        done()
+    it 'should not exist after failed validate', (done) ->
+      token = new Token created_on: null
+      token.validate (err) ->
+        assert.equal err.errors.created_on.type, 'required', 'created_on is required'
+        assert.isUndefined token.token_string, 'token_string does not exist'
+        done()
   describe 'token_hash', ->
     it 'should exist after validate', (done) ->
       token = new Token
