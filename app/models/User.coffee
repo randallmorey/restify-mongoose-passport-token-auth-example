@@ -1,7 +1,6 @@
 mongoose = require 'mongoose'
 bcrypt = require 'bcrypt'
 
-
 UserSchema = mongoose.Schema
   email:
     type: String
