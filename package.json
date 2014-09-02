@@ -4,12 +4,16 @@
   "dependencies": {
     "coffee-script": "",
     "dotenv": "",
-    "restify": "",
+    "bcrypt": "",
+    "mongoose": "",
+    "restify": ""
+  },
+  "devDependencies": {
     "mocha": "",
     "chai": ""
   },
   "scripts": {
     "start": "./node_modules/coffee-script/bin/coffee app.coffee",
-    "test": "./node_modules/.bin/mocha --compilers coffee:coffee-script/register"
+    "test": "./node_modules/.bin/mocha --compilers coffee:coffee-script/register test/**/*.coffee"
   }
 }
