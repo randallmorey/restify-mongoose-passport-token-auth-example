@@ -26,8 +26,8 @@ TokenSchema = mongoose.Schema
     required: true
     default: ->
       tokenExpirationTimeout =
-        if process.env.TOKEN_EXPIRATION_TIMEOUT
-          parseInt process.env.TOKEN_EXPIRATION_TIMEOUT, 10
+        if process.env.TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS
+          parseInt process.env.TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS, 10
         else
           1 * 24 * 60 * 60 * 1000
       Date.now() + tokenExpirationTimeout

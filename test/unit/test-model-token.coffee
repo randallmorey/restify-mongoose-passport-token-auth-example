@@ -1,4 +1,7 @@
+dotenv = require 'dotenv'
 assert = require('chai').assert
+
+dotenv.load()
 
 describe 'Token', ->
   Token = require '../../app/models/Token'
@@ -60,3 +63,18 @@ describe 'Token', ->
           throw err if err
           assert.equal isMatch, false, 'tokens do not match'
           done()
+  describe 'isExpired', ->
+    it 'should return false before expires_on', ->
+      token = new Token
+      assert.ok token.expires_on.getTime() > Date.now(), 'expires_on is in the future'
+      assert.equal token.isExpired(), false, 'isExpired returns false'
+    it 'should return true after expires_on', (done) ->
+      token = new Token
+      assert.isDefined process.env.TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS, 'TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS environment variable is defined'
+      tokenExpirationTimeout = parseInt process.env.TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS, 10
+      assert.ok tokenExpirationTimeout < 2000, 'token expiration timeout is less than 2000 ms'
+      setTimeout (->
+        assert.ok token.expires_on.getTime() < Date.now(), 'expires_on is in the past'
+        assert.equal token.isExpired(), true, 'isExpired returns true'
+        done()
+      ), tokenExpirationTimeout
