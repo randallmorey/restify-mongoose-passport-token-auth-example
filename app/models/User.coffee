@@ -25,6 +25,10 @@ UserSchema = mongoose.Schema
     type: Date
     required: true
     default: Date.now
+  tokens: [
+    type: mongoose.Schema.Types.ObjectId
+    ref: 'Token'
+  ]
 
 UserSchema.pre 'validate', (next) ->
   saltWorkFactor = 5
