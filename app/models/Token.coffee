@@ -15,8 +15,9 @@ TokenSchema = mongoose.Schema
   token_hash:
     type: String
     required: true
-  user_agent:
-    type: String
+  revoked:
+    type: Boolean
+    default: false
   created_on:
     type: Date
     required: true
@@ -43,16 +44,19 @@ TokenSchema.pre 'validate', (next) ->
 TokenSchema.post 'validate', ->
   @token_string = undefined
 
-TokenSchema.methods.isExpired = (next) ->
+TokenSchema.methods.isExpired = ->
   expirationTime = @expires_on.getTime()
   Date.now() >= expirationTime
+  
+TokenSchema.methods.isRevoked = ->
+  !!@revoked
+
+TokenSchema.methods.isActive = ->
+  !@isExpired() and !@isRevoked()
 
 TokenSchema.methods.compareToken = (candidateToken, next) ->
-  if @isExpired()
-    next null, false
-  else
-    bcrypt.compare candidateToken, @token_hash, (err, isMatch) ->
-      next err, isMatch
+  bcrypt.compare candidateToken, @token_hash, (err, isMatch) ->
+    next err, isMatch
 
 Token = mongoose.model 'Token', TokenSchema
 module.exports = Token
