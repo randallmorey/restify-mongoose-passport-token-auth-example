@@ -12,7 +12,7 @@ describe 'Token', ->
       token = new Token
       assert.isString token.token_string, 'token_string is a string'
       assert.lengthOf token.token_string, 128, 'token_string is 128 characters'
-    it 'should include a revoked boolean defaulting to false', ->
+    it 'should include a revoked boolean that defaults to false', ->
       token = new Token
       assert.equal token.revoked, false, 'token is not revoked by default'
     it 'should include a created_on date', ->
