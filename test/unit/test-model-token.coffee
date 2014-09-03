@@ -90,7 +90,7 @@ describe 'Token', ->
               assert.equal token.isExpired(), true, 'isExpired returns true'
               assert.equal isMatch, false, 'tokens do not match'
               done()
-          ), tokenExpirationTimeout
+          ), tokenExpirationTimeout + 1
     it 'should not match when token_string and token_hash do not match and token is expired', (done) ->
       token = new Token
       token_string = 'some random non-token string'
@@ -104,7 +104,7 @@ describe 'Token', ->
               assert.equal token.isExpired(), true, 'isExpired returns true'
               assert.equal isMatch, false, 'tokens do not match'
               done()
-          ), tokenExpirationTimeout
+          ), tokenExpirationTimeout + 1
   describe 'isExpired', ->
     it 'should return false before expires_on', ->
       token = new Token
@@ -118,4 +118,4 @@ describe 'Token', ->
         assert.ok token.expires_on.getTime() < Date.now(), 'expires_on is in the past'
         assert.equal token.isExpired(), true, 'isExpired returns true'
         done()
-      ), tokenExpirationTimeout
+      ), tokenExpirationTimeout + 1
