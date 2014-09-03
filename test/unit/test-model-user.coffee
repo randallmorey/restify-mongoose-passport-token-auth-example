@@ -11,8 +11,11 @@ describe 'User', ->
       user = new User
       assert.ok user.created_on instanceof Date, 'created_on is an Date'
   describe 'validate', ->
-    #it 'should not pass when no values are specified', (done) ->
-    #  # TODO
+    it 'should fail on no values specified', (done) ->
+      user = new User
+      user.validate (err) ->
+        assert.isDefined err, 'user does not validate'
+        done()
     it 'should pass on valid email and password', (done) ->
       user = new User email: 'test@test.com', password: 'test1234'
       user.validate (err) ->
