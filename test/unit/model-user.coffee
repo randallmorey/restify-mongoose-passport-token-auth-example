@@ -1,6 +1,6 @@
 assert = require('chai').assert
 
-describe 'User', ->
+describe 'Unit: User', ->
   User = require '../../app/models/User'
   
   describe 'defaults', ->
@@ -10,7 +10,7 @@ describe 'User', ->
       assert.equal user.active, true, 'active is true by default'
     it 'should include a created_on date', ->
       user = new User
-      assert.ok user.created_on instanceof Date, 'created_on is an Date'
+      assert.instanceOf user.created_on, Date, 'created_on is an Date'
   
   describe 'validate', ->
     it 'should fail on no values specified', (done) ->

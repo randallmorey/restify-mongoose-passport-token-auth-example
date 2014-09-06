@@ -3,7 +3,7 @@ assert = require('chai').assert
 
 dotenv.load()
 
-describe 'Token', ->
+describe 'Unit: Token', ->
   Token = require '../../app/models/Token'
   tokenExpirationTimeout = parseInt process.env.TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS, 10
   
@@ -17,10 +17,10 @@ describe 'Token', ->
       assert.equal token.revoked, false, 'token is not revoked by default'
     it 'should include a created_on date', ->
       token = new Token
-      assert.ok token.created_on instanceof Date, 'created_on is an Date'
+      assert.instanceOf token.created_on, Date, 'created_on is an Date'
     it 'should include a expires_on date', ->
       token = new Token
-      assert.ok token.expires_on instanceof Date, 'expires_on is an Date'
+      assert.instanceOf token.expires_on, Date, 'expires_on is an Date'
     it 'should include different created_on and expires_on dates', ->
       token = new Token
       assert.notEqual token.created_on, token.expires_on, 'created_on and expires_on have different values'
