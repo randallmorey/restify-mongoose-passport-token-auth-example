@@ -1,5 +1,6 @@
 mongoose = require 'mongoose'
 bcrypt = require 'bcrypt'
+Token = require './Token'
 
 UserSchema = mongoose.Schema
   email:
@@ -25,7 +26,7 @@ UserSchema = mongoose.Schema
     type: Date
     required: true
     default: Date.now
-  tokens:
+  token:
     type: mongoose.Schema.Types.ObjectId
     ref: 'Token'
 
@@ -47,6 +48,27 @@ UserSchema.post 'validate', ->
 UserSchema.methods.comparePassword = (candidatePassword, next) ->
 	bcrypt.compare candidatePassword, @password_hash, (err, isMatch) ->
 		next err, isMatch
+
+UserSchema.methods.revokeToken = (next) ->
+  @populate 'token', (err) =>
+    return next err if err
+    token = @token
+    if token
+      token.revoked = true
+      token.save (err) ->
+        return next err if err
+        next null, token
+    else
+      next()
+
+UserSchema.methods.issueToken = (next) ->
+  @revokeToken (err, oldToken) =>
+    return next err if err
+    newToken = new Token
+    newToken.save (err) =>
+      return next err if err
+      @token = newToken
+      next null, newToken, oldToken
 
 User = mongoose.model 'User', UserSchema
 module.exports = User
