@@ -1,7 +1,8 @@
 assert = require('chai').assert
 
-describe 'User', ->
+describe 'Unit: User', ->
   User = require '../../app/models/User'
+  
   describe 'defaults', ->
     it 'should include an active boolean that defaults to true', ->
       user = new User
@@ -9,10 +10,14 @@ describe 'User', ->
       assert.equal user.active, true, 'active is true by default'
     it 'should include a created_on date', ->
       user = new User
-      assert.ok user.created_on instanceof Date, 'created_on is an Date'
+      assert.instanceOf user.created_on, Date, 'created_on is an Date'
+  
   describe 'validate', ->
-    #it 'should not pass when no values are specified', (done) ->
-    #  # TODO
+    it 'should fail on no values specified', (done) ->
+      user = new User
+      user.validate (err) ->
+        assert.isDefined err, 'user does not validate'
+        done()
     it 'should pass on valid email and password', (done) ->
       user = new User email: 'test@test.com', password: 'test1234'
       user.validate (err) ->
@@ -44,6 +49,7 @@ describe 'User', ->
           user.validate (err) ->
             assert.equal err.errors.password.type, 'regexp', 'error type is regexp'
             done()
+  
   describe 'password', ->
     it 'should not exist after successful validate', (done) ->
       user = new User email: 'test@test.com', password: 'test1234'
@@ -57,12 +63,14 @@ describe 'User', ->
         assert.equal err.errors.password.type, 'regexp', 'error type is regexp'
         assert.isUndefined user.password, 'password does not exist'
         done()
+  
   describe 'password_hash', ->
     it 'should exist after validate', (done) ->
       user = new User email: 'test@test.com', password: 'test1234'
       user.validate ->
         assert.isString user.password_hash, 'password_hash exists'
         done()
+  
   describe 'comparePassword', ->
     it 'should match when password and password_hash match', (done) ->
       user = new User email: 'test@test.com', password: 'test1234'
