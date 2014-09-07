@@ -65,10 +65,20 @@ UserSchema.methods.issueToken = (next) ->
   @revokeToken (err, oldToken) =>
     return next err if err
     newToken = new Token
+    tokenString = newToken.token_string
     newToken.save (err) =>
       return next err if err
       @token = newToken
-      next null, newToken, oldToken
+      next null, newToken, oldToken, tokenString
+
+UserSchema.methods.compareToken = (candidateToken, next) ->
+  @populate 'token', (err) =>
+    return next err if err
+    token = @token
+    if token
+      token.compareToken candidateToken, next
+    else
+      next null, false
 
 User = mongoose.model 'User', UserSchema
 module.exports = User

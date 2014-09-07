@@ -51,6 +51,18 @@ describe 'Integration: User', ->
         user.populate 'token', (err) ->
           assert.equal user.token.id, token.id, 'user token ID is equal to token ID returned by issueToken'
           done()
+    it 'should generate a token with no token_string', (done) ->
+      user = new User
+      user.issueToken (err, token) ->
+        throw err if err
+        assert.isUndefined token.token_string, 'token_string on token is undefined'
+        done()
+    it 'should pass the raw token string as a parameter to the callback', (done) ->
+      user = new User
+      user.issueToken (err, token, oldToken, tokenString) ->
+        throw err if err
+        assert.isString tokenString, 'token string is a string'
+        done()
     it 'should revoke, save, and return an existing user token', (done) ->
       user = new User
       user.issueToken (err, firstToken) ->
@@ -61,4 +73,28 @@ describe 'Integration: User', ->
           assert.equal oldToken.revoked, true, 'old token is revoked'
           assert.equal oldToken.isNew, false, 'old token is not new'
           assert.equal oldToken.isModified(), false, 'old token has no unsaved changes'
+          done()
+  
+  describe 'compareToken', ->
+    it 'should not match when user has no token', (done) ->
+      user = new User
+      user.compareToken 'random12345', (err, isMatch) ->
+        throw err if err
+        assert.equal isMatch, false, 'candidate token does not match'
+        done()
+    it 'should not match when candidate token does not match user token hash', (done) ->
+      user = new User
+      user.issueToken (err) ->
+        throw err if err
+        user.compareToken 'random12345', (err, isMatch) ->
+          throw err if err
+          assert.equal isMatch, false, 'candidate token does not match'
+          done()
+    it 'should match when candidate token matches user token hash', (done) ->
+      user = new User
+      user.issueToken (err, token, oldToken, tokenString) ->
+        throw err if err
+        user.compareToken tokenString, (err, isMatch) ->
+          throw err if err
+          assert.equal isMatch, true, 'candidate token matches'
           done()
