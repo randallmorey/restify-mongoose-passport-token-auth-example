@@ -15,6 +15,7 @@ TokenSchema = mongoose.Schema
   token_hash:
     type: String
     required: true
+    unique: true
   revoked:
     type: Boolean
     default: false
