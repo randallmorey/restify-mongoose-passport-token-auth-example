@@ -15,11 +15,11 @@ class DatabaseHelper
   @disconnect: (next) ->
     mongoose.disconnect next
   
-  @clearDatabase: (next) ->
-    collections = (name for name of mongoose.connection.collections)
+  @empty: (models..., next) ->
     removeOrNext = ->
-      if collections.length
-        mongoose.connection.db.dropCollection collections.pop(), ->
+      if models.length
+        models.pop().remove (err) ->
+          return next err if err
           removeOrNext()
       else
         next()
