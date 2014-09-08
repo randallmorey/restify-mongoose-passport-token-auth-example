@@ -27,7 +27,7 @@ describe 'Integration: Token', ->
           assert.equal token.isExpired(), false, 'token is unexpired'
           done()
     if longRunningTests
-      it 'should remove expired tokens 60 seconds after expiration', (done) ->
+      it 'should remove expired tokens within 60 seconds of expiration', (done) ->
         timeout = tokenExpirationTimeout + (60 * 1000)
         @timeout timeout + 1000
         token = new Token
