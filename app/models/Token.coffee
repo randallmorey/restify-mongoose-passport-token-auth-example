@@ -25,6 +25,7 @@ TokenSchema = mongoose.Schema
   expires_on:
     type: Date
     required: true
+    expires: 0
     default: ->
       tokenExpirationTimeout = parseInt process.env.TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS, 10
       Date.now() + tokenExpirationTimeout
