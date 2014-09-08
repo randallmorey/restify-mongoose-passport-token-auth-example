@@ -4,7 +4,18 @@ mongoose = require 'mongoose'
 dotenv.load()
 
 class DatabaseHelper
-  @_clearDatabase: (next) ->
+  @connect: (next) ->
+    if mongoose.connection.readyState == 0
+      mongoose.connect process.env.MONGODB_URL, (err) =>
+        throw err if err
+        next()
+    else
+      next()
+  
+  @disconnect: (next) ->
+    mongoose.disconnect next
+  
+  @clearDatabase: (next) ->
     collections = (name for name of mongoose.connection.collections)
     removeOrNext = ->
       if collections.length
@@ -13,16 +24,5 @@ class DatabaseHelper
       else
         next()
     removeOrNext()
-  
-  @_connect: (next) ->
-    mongoose.connect process.env.MONGODB_URL, (err) =>
-      throw err if err
-      next()
-  
-  @clearDatabase: (next) ->
-    if mongoose.connection.readyState == 0
-      @_connect => @_clearDatabase next
-    else
-      @_clearDatabase next
 
 module.exports = DatabaseHelper
