@@ -6,10 +6,30 @@ describe 'Integration: User', ->
   Token = require '../../app/models/Token'
   
   beforeEach (done) ->
-    DatabaseHelper.clearDatabase done
+    DatabaseHelper.connect ->
+      DatabaseHelper.empty User, Token, done
   
-  after (done) ->
-    DatabaseHelper.clearDatabase done
+  afterEach (done) ->
+    DatabaseHelper.disconnect done
+  
+  describe 'email uniqueness', ->
+    it 'should allow multiple users with distinct email addresses', (done) ->
+      user1 = new User email: 'test@test.com', password: 'test1234'
+      user2 = new User email: 'foo@example.com', password: 'test1234'
+      user1.save (err) ->
+        assert.isNull err, 'valid user produces no error'
+        user2.save (err) ->
+          assert.isNull err, 'valid user produces no error'
+          done()
+    it 'should allow only one user with a given email address', (done) ->
+      user1 = new User email: 'test@test.com', password: 'test1234'
+      user2 = new User email: 'test@test.com', password: 'test1234'
+      user1.save (err) ->
+        throw err if err
+        user2.save (err) ->
+          assert.isDefined err.err
+          assert.equal user1.email, user2.email, 'user emails are duplicates'
+          done()
   
   describe 'revokeToken', ->
     it 'should do nothing if user has no token', (done) ->
