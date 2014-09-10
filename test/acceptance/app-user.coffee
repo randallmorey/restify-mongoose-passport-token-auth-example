@@ -21,6 +21,14 @@ describe 'Acceptance: User', ->
             email: 'test@test.com'
             password: 'test1234'
           .expect 201, done
+      it 'should disallow creation of a user when email and password are missing [409]', (done) ->
+        supertest(app)
+          .post '/users'
+          .expect 409
+          .expect
+            code: 'InvalidArgument'
+            message: 'Email and password required.'
+          .end done
       it 'should disallow creation of a user with duplicate email [409]', (done) ->
         supertest(app)
           .post '/users'
