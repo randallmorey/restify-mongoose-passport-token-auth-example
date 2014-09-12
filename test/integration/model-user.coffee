@@ -118,3 +118,26 @@ describe 'Integration: User', ->
           throw err if err
           assert.equal isMatch, true, 'candidate token matches'
           done()
+  
+  describe 'findByToken', ->
+    it 'should return a user matching a raw token string', (done) ->
+      user1 = new User email: 'test@test.com', password: 'test1234'
+      user2 = new User email: 'foo@example.com', password: 'test1234'
+      user1.issueToken (err, token, oldToken, tokenString) ->
+        throw err if err
+        user1TokenString = tokenString
+        user2.issueToken (err, token, oldToken, tokenString) ->
+          throw err if err
+          user2TokenString = tokenString
+          User.findByToken user1TokenString, (err, user) ->
+            assert.equal user.id, user1.id, 'user was correctly found by token'
+            User.findByToken user2TokenString, (err, user) ->
+              assert.equal user.id, user2.id, 'user was correctly found by token'
+              done()
+    it 'should not return any user when no match is found', (done) ->
+      user = new User email: 'test@test.com', password: 'test1234'
+      user.issueToken (err) ->
+        throw err if err
+        User.findByToken 'nosuchtokenstring', (err, user) ->
+          assert.isUndefined user, 'no matching user was found'
+          done()
