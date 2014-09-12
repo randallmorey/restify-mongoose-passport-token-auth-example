@@ -33,7 +33,7 @@ describe 'Integration: User', ->
   
   describe 'revokeToken', ->
     it 'should do nothing if user has no token', (done) ->
-      user = new User
+      user = new User email: 'test@test.com', password: 'test1234'
       assert.isUndefined user.token, 'user has no token'
       user.revokeToken (err, token) ->
         throw err if err
@@ -41,7 +41,7 @@ describe 'Integration: User', ->
         assert.isUndefined user.token, 'user still has no token'
         done()
     it 'should mark an existing user token as revoked', (done) ->
-      user = new User
+      user = new User email: 'test@test.com', password: 'test1234'
       user.issueToken (err, token) ->
         throw err if err
         assert.equal token.revoked, false, 'token is unrevoked'
@@ -51,7 +51,7 @@ describe 'Integration: User', ->
           assert.equal token.revoked, true, 'token is revoked'
           done()
     it 'should save an existing user token', (done) ->
-      user = new User
+      user = new User email: 'test@test.com', password: 'test1234'
       user.issueToken (err, token) ->
         throw err if err
         user.revokeToken (err, token) ->
@@ -62,7 +62,7 @@ describe 'Integration: User', ->
   
   describe 'issueToken', ->
     it 'should assign and save a new token to the user', (done) ->
-      user = new User
+      user = new User email: 'test@test.com', password: 'test1234'
       user.issueToken (err, token) ->
         throw err if err
         assert.instanceOf token, Token, 'new token is an instance of Token'
@@ -72,19 +72,19 @@ describe 'Integration: User', ->
           assert.equal user.token.id, token.id, 'user token ID is equal to token ID returned by issueToken'
           done()
     it 'should generate a token with no token_string', (done) ->
-      user = new User
+      user = new User email: 'test@test.com', password: 'test1234'
       user.issueToken (err, token) ->
         throw err if err
         assert.isUndefined token.token_string, 'token_string on token is undefined'
         done()
     it 'should pass the raw token string as a parameter to the callback', (done) ->
-      user = new User
+      user = new User email: 'test@test.com', password: 'test1234'
       user.issueToken (err, token, oldToken, tokenString) ->
         throw err if err
         assert.isString tokenString, 'token string is a string'
         done()
     it 'should revoke, save, and return an existing user token', (done) ->
-      user = new User
+      user = new User email: 'test@test.com', password: 'test1234'
       user.issueToken (err, firstToken) ->
         throw err if err
         user.issueToken (err, secondToken, oldToken) ->
@@ -97,13 +97,13 @@ describe 'Integration: User', ->
   
   describe 'compareToken', ->
     it 'should not match when user has no token', (done) ->
-      user = new User
+      user = new User email: 'test@test.com', password: 'test1234'
       user.compareToken 'random12345', (err, isMatch) ->
         throw err if err
         assert.equal isMatch, false, 'candidate token does not match'
         done()
     it 'should not match when candidate token does not match user token hash', (done) ->
-      user = new User
+      user = new User email: 'test@test.com', password: 'test1234'
       user.issueToken (err) ->
         throw err if err
         user.compareToken 'random12345', (err, isMatch) ->
@@ -111,7 +111,7 @@ describe 'Integration: User', ->
           assert.equal isMatch, false, 'candidate token does not match'
           done()
     it 'should match when candidate token matches user token hash', (done) ->
-      user = new User
+      user = new User email: 'test@test.com', password: 'test1234'
       user.issueToken (err, token, oldToken, tokenString) ->
         throw err if err
         user.compareToken tokenString, (err, isMatch) ->
