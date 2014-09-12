@@ -12,6 +12,13 @@ server
   .use restify.bodyParser()
   .use passport.initialize()
 
+# /auth/login
+server.post '/auth/token',
+  passport.authenticate('basic', session: false),
+  (req, res, next) ->
+    res.send 201, {token_string: req.user.token_string}
+
+# /users
 server.post '/users', (req, res, next) ->
   email = req.params.email
   password = req.params.password
