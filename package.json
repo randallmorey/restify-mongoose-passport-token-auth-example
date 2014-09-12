@@ -7,7 +7,9 @@
     "coffee-script": "",
     "dotenv": "",
     "mongoose": "",
-    "restify": ""
+    "restify": "",
+    "passport": "",
+    "passport-http": ""
   },
   "devDependencies": {
     "mocha": "",

@@ -1,11 +1,16 @@
 _ = require 'underscore'
 restify = require 'restify'
+passport = require 'passport'
+basicAuthStrategy = require './app/auth-strategies/basic'
 User = require './app/models/User'
+
+passport.use basicAuthStrategy
 
 server = restify.createServer()
 server
   .use restify.fullResponse()
   .use restify.bodyParser()
+  .use passport.initialize()
 
 server.post '/users', (req, res, next) ->
   email = req.params.email
