@@ -5,6 +5,6 @@ coffeeCoverage = require 'coffee-coverage'
 module.exports = coffeeCoverage.register
   path: 'relative'
   basePath: path.join __dirname, '../..'
-  exclude: ['test', 'node_modules', '.git']
+  exclude: ['test', 'node_modules', '.git', 'app.coffee']
   initAll: true
   streamlinejs: true
