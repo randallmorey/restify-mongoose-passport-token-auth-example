@@ -9,7 +9,8 @@
     "mongoose": "",
     "restify": "",
     "passport": "",
-    "passport-http": ""
+    "passport-http": "",
+    "passport-http-bearer": ""
   },
   "devDependencies": {
     "mocha": "",

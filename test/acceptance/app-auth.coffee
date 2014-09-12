@@ -14,6 +14,7 @@ describe 'Acceptance: Auth', ->
   nonExistentUserDate =
     email: 'foo@bar.com'
     password: 'nosuchuser'
+  user = null
   basicAuthHeader = [
     'Basic'
     new Buffer("#{userData.email}:#{userData.password}").toString 'base64'
@@ -30,7 +31,9 @@ describe 'Acceptance: Auth', ->
   beforeEach (done) ->
     DatabaseHelper.connect ->
       DatabaseHelper.empty User, Token, ->
-        User.create userData, done
+        User.create userData, (err, instance) ->
+          user = instance
+          done err
   
   afterEach (done) ->
     DatabaseHelper.disconnect done
@@ -38,7 +41,7 @@ describe 'Acceptance: Auth', ->
   describe '/auth/token', ->
     describe 'POST', ->
       it 'should create and return a new user token [201]', (done) ->
-        supertest(app)
+        supertest app
           .post '/auth/token'
           .set 'Authorization', basicAuthHeader
           .send()
@@ -47,7 +50,7 @@ describe 'Acceptance: Auth', ->
             'token_string was not present in response' if !res.body.token_string
           .end done
       it 'should create a token that matches the assigned user token [201]', (done) ->
-        supertest(app)
+        supertest app
           .post '/auth/token'
           .set 'Authorization', basicAuthHeader
           .send()
@@ -57,11 +60,10 @@ describe 'Acceptance: Auth', ->
             User.find (err, users) ->
               throw err if err
               users[0].compareToken res.body.token_string, (err, isMatch) ->
-                throw err if err
                 throw new Error 'response token does not match assigned user token' if !isMatch
-                done()
+                done err
       it 'should revoke a previously assigned user token and return a new one [201]', (done) ->
-        supertest(app)
+        supertest app
           .post '/auth/token'
           .set 'Authorization', basicAuthHeader
           .send()
@@ -69,7 +71,7 @@ describe 'Acceptance: Auth', ->
           .end (err, res) ->
             throw err if err
             oldTokenString = res.body.token_string
-            supertest(app)
+            supertest app
               .post '/auth/token'
               .set 'Authorization', basicAuthHeader
               .send()
@@ -87,20 +89,52 @@ describe 'Acceptance: Auth', ->
                       throw err if err
                       throw new Error 'old token matches assigned user token, but should not' if isMatch
                       Token.find (err, tokens) ->
-                        throw err if err
                         throw new Error 'old token was not revoked' if !tokens[0].revoked
-                        done()
+                        done err
       it 'should fail when invalid password is passed [401]', (done) ->
-        supertest(app)
+        supertest app
           .post '/auth/token'
           .set 'Authorization', basicAuthInvalidHeader
           .send()
           .expect 401
           .end done
       it 'should fail when user does not exist [401]', (done) ->
-        supertest(app)
+        supertest app
           .post '/auth/token'
           .set 'Authorization', basicAuthNonExistentHeader
+          .send()
+          .expect 401
+          .end done
+    
+    describe 'DELETE', ->
+      it 'should revoke the matched user token [204]', (done) ->
+        user.issueToken (err, token, oldToken, tokenString) ->
+          bearerAuthHeader = [
+            'Bearer'
+            new Buffer("#{tokenString}").toString('base64')
+          ].join ' '
+          throw new Error 'user token not issued' if !token or !tokenString
+          supertest app
+            .delete '/auth/token'
+            .set 'Authorization', bearerAuthHeader
+            .send()
+            .expect 204
+            .end (err, res) ->
+              throw err if err
+              user.populate 'token', (err) ->
+                throw new Error 'user token not revoked' if !user.token.revoked
+                done err
+      it 'should fail when no token is passed [401]', (done) ->
+        supertest app
+          .post '/auth/token'
+          .set 'Authorization', 'Bearer '
+          .send()
+          .expect 401
+          .end done
+      it 'should fail when invalid token is passed [401]', (done) ->
+        supertest app
+          .post '/auth/token'
+          .set 'Authorization', 'Bearer nosuchtoken'
           .send()
           .expect 401
           .end done
