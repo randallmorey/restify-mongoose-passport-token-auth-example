@@ -69,7 +69,8 @@ UserSchema.methods.issueToken = (next) ->
     newToken.save (err) =>
       return next err if err
       @token = newToken
-      next null, newToken, oldToken, tokenString
+      @save (err) ->
+        next err, newToken, oldToken, tokenString
 
 UserSchema.methods.compareToken = (candidateToken, next) ->
   @populate 'token', (err) =>
