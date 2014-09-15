@@ -14,7 +14,7 @@ describe 'Acceptance: User', ->
   
   describe '/users', ->
     describe 'POST', ->
-      it 'should create and return a new user [200]', (done) ->
+      it 'should create and return a new user [201]', (done) ->
         supertest(app)
           .post '/users'
           .send

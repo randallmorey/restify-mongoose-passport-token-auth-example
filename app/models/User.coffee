@@ -45,6 +45,21 @@ UserSchema.pre 'validate', (next) ->
 UserSchema.post 'validate', ->
   @password = undefined if @password
 
+UserSchema.statics.findByToken = (candidateToken, next) ->
+  User.find (err, users) ->
+    compareOrNext = ->
+      if users.length
+        user = users.pop()
+        user.compareToken candidateToken, (err, isMatch) ->
+          return next err if err
+          if isMatch
+            next null, user
+          else
+            compareOrNext()
+      else
+        next()
+    compareOrNext()
+
 UserSchema.methods.comparePassword = (candidatePassword, next) ->
 	bcrypt.compare candidatePassword, @password_hash, (err, isMatch) ->
 		next err, isMatch
@@ -69,7 +84,8 @@ UserSchema.methods.issueToken = (next) ->
     newToken.save (err) =>
       return next err if err
       @token = newToken
-      next null, newToken, oldToken, tokenString
+      @save (err) ->
+        next err, newToken, oldToken, tokenString
 
 UserSchema.methods.compareToken = (candidateToken, next) ->
   @populate 'token', (err) =>
