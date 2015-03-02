@@ -8,11 +8,19 @@ User = require './app/models/User'
 passport.use basicAuthStrategy
 passport.use bearerAuthStrategy
 
+restify.CORS.ALLOW_HEADERS.push 'authorization'
+
 server = restify.createServer()
 server
+  .use restify.CORS()
   .use restify.fullResponse()
   .use restify.bodyParser()
   .use passport.initialize()
+
+# Enable OPTIONS requests for CORS
+server.opts /\.*/, (req, res, next) ->
+  res.send 200
+  next()
 
 # /auth/login
 server.post '/auth/token',
