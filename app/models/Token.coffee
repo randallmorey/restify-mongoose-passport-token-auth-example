@@ -8,9 +8,9 @@ TokenSchema = mongoose.Schema
   token_string:
     type: String
     default: ->
-      # generates a random-length (64-128 characters) token of random characters
-      maxLength = 128
-      mask = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789~`!@#$%^&*()_+-={}[]:";\'<>?,./|\\'
+      # generates a token of random alphanumeric characters
+      maxLength = 256
+      mask = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
       (mask[Math.floor(Math.random() * (mask.length - 1))] for i in [0...maxLength]).join('')
   token_hash:
     type: String

@@ -8,10 +8,10 @@ describe 'Unit: Token', ->
   tokenExpirationTimeout = parseInt process.env.TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS, 10
   
   describe 'defaults', ->
-    it 'should include a 128-character token_string', ->
+    it 'should include a 256-character token_string', ->
       token = new Token
       assert.isString token.token_string, 'token_string is a string'
-      assert.lengthOf token.token_string, 128, 'token_string is 128 characters'
+      assert.lengthOf token.token_string, 256, 'token_string is 256 characters'
     it 'should include a revoked boolean that defaults to false', ->
       token = new Token
       assert.equal token.revoked, false, 'token is not revoked by default'
