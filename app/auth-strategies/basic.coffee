@@ -13,7 +13,12 @@ module.exports = new BasicStrategy passReqToCallback: true,
               return done err if err
               user = user.toJSON()
               token = token.toJSON()
-              token.token_string = tokenString
+              tokenId = token._id
+              encodedTokenString = new Buffer([
+                tokenId
+                tokenString
+              ].join ':').toString 'base64'
+              token.token_string = encodedTokenString
               user.token = token
               done null, user
           else

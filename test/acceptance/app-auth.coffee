@@ -3,6 +3,7 @@ supertest = require 'supertest'
 describe 'Acceptance: Auth', ->
   app = require '../../server.coffee'
   DatabaseHelper = require '../helpers/DatabaseHelper'
+  TokenHelper = require '../helpers/TokenHelper'
   Token = require '../../app/models/Token'
   User = require '../../app/models/User'
   userData =
@@ -59,7 +60,8 @@ describe 'Acceptance: Auth', ->
             throw err if err
             User.find (err, users) ->
               throw err if err
-              users[0].compareToken res.body.token_string, (err, isMatch) ->
+              decodedToken = TokenHelper.decodeTokenString res.body.token_string
+              users[0].compareToken decodedToken.token_string, (err, isMatch) ->
                 throw new Error 'response token does not match assigned user token' if !isMatch
                 done err
       it 'should revoke a previously assigned user token and return a new one [201]', (done) ->
@@ -70,6 +72,7 @@ describe 'Acceptance: Auth', ->
           .expect 201
           .end (err, res) ->
             throw err if err
+            oldDecodedToken = TokenHelper.decodeTokenString res.body.token_string
             oldTokenString = res.body.token_string
             supertest app
               .post '/tokens'
@@ -78,14 +81,15 @@ describe 'Acceptance: Auth', ->
               .expect 201
               .end (err, res) ->
                 throw err if err
+                newDecodedToken = TokenHelper.decodeTokenString res.body.token_string
                 newTokenString = res.body.token_string
                 throw new Error 'old and new token strings match' if oldTokenString == newTokenString
                 User.find (err, users) ->
                   throw err if err
-                  users[0].compareToken newTokenString, (err, isMatch) ->
+                  users[0].compareToken newDecodedToken.token_string, (err, isMatch) ->
                     throw err if err
                     throw new Error 'response token does not match assigned user token' if !isMatch
-                    users[0].compareToken oldTokenString, (err, isMatch) ->
+                    users[0].compareToken oldDecodedToken.token_string, (err, isMatch) ->
                       throw err if err
                       throw new Error 'old token matches assigned user token, but should not' if isMatch
                       Token.find (err, tokens) ->
