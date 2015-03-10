@@ -11,7 +11,7 @@ describe 'Acceptance: Auth', ->
   invalidUserData =
     email: 'test@test.com'
     password: 'wrongpassword'
-  nonExistentUserDate =
+  nonExistentUserData =
     email: 'foo@bar.com'
     password: 'nosuchuser'
   user = null
@@ -25,7 +25,7 @@ describe 'Acceptance: Auth', ->
   ].join ' '
   basicAuthNonExistentHeader = [
     'Basic'
-    new Buffer("#{nonExistentUserDate.email}:#{nonExistentUserDate.password}").toString 'base64'
+    new Buffer("#{nonExistentUserData.email}:#{nonExistentUserData.password}").toString 'base64'
   ].join ' '
   
   beforeEach (done) ->
