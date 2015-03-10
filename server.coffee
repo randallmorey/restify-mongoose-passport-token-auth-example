@@ -18,7 +18,7 @@ server
 server.post '/auth/token',
   passport.authenticate('basic', session: false),
   (req, res, next) ->
-    res.send 201, {token_string: req.user.token_string}
+    res.send 201, req.user.token
 
 # /auth/logout
 server.del '/auth/token',

@@ -11,8 +11,9 @@ module.exports = new BasicStrategy passReqToCallback: true,
           if isMatch
             user.issueToken (err, token, oldToken, tokenString) ->
               return done err if err
-              data = user.toJSON()
-              data.token_string = tokenString
-              done null, data
+              user = user.toJSON()
+              user.token = token.toJSON()
+              user.token.token_string = tokenString
+              done null, user
           else
             done null, false, message: 'Invalid credentials'
