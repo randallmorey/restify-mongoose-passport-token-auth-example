@@ -56,8 +56,11 @@ TokenSchema.methods.isActive = ->
   !@isExpired() and !@isRevoked()
 
 TokenSchema.methods.compareToken = (candidateTokenId, candidateToken, next) ->
-  bcrypt.compare candidateToken, @token_hash, (err, isMatch) ->
-    next err, isMatch
+  if candidateTokenId?.toString() == @_id?.toString()
+    bcrypt.compare candidateToken, @token_hash, (err, isMatch) ->
+      next err, isMatch
+  else
+    next null, false
 
 Token = mongoose.model 'Token', TokenSchema
 module.exports = Token

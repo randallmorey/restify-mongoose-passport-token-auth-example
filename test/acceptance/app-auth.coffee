@@ -61,7 +61,7 @@ describe 'Acceptance: Auth', ->
             User.find (err, users) ->
               throw err if err
               decodedToken = TokenHelper.decodeTokenString res.body.token_string
-              users[0].compareToken null, decodedToken.token_string, (err, isMatch) ->
+              users[0].compareToken decodedToken.id, decodedToken.token_string, (err, isMatch) ->
                 throw new Error 'response token does not match assigned user token' if !isMatch
                 done err
       it 'should revoke a previously assigned user token and return a new one [201]', (done) ->
@@ -86,10 +86,10 @@ describe 'Acceptance: Auth', ->
                 throw new Error 'old and new token strings match' if oldTokenString == newTokenString
                 User.find (err, users) ->
                   throw err if err
-                  users[0].compareToken null, newDecodedToken.token_string, (err, isMatch) ->
+                  users[0].compareToken newDecodedToken.id, newDecodedToken.token_string, (err, isMatch) ->
                     throw err if err
                     throw new Error 'response token does not match assigned user token' if !isMatch
-                    users[0].compareToken null, oldDecodedToken.token_string, (err, isMatch) ->
+                    users[0].compareToken newDecodedToken.id, oldDecodedToken.token_string, (err, isMatch) ->
                       throw err if err
                       throw new Error 'old token matches assigned user token, but should not' if isMatch
                       Token.find (err, tokens) ->
@@ -147,3 +147,21 @@ describe 'Acceptance: Auth', ->
           .send()
           .expect 401
           .end done
+      it 'should fail when an invalid token ID is passed [204]', (done) ->
+        user.issueToken (err, token, oldToken, tokenString) ->
+          tokenId = 'wrongId1234'
+          encodedToken = new Buffer([
+            tokenId
+            tokenString
+          ].join ':').toString 'base64'
+          bearerAuthHeader = [
+            'Bearer'
+            encodedToken
+          ].join ' '
+          throw new Error 'user token not issued' if !token or !tokenString
+          supertest app
+            .delete '/tokens'
+            .set 'Authorization', bearerAuthHeader
+            .send()
+            .expect 401
+            .end done

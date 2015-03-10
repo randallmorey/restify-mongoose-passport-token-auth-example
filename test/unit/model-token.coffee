@@ -71,9 +71,10 @@ describe 'Unit: Token', ->
   describe 'compareToken', ->
     it 'should match when token_string and token_hash match', (done) ->
       token = new Token
+      tokenId = token._id
       token_string = token.token_string
       token.validate (err) ->
-        token.compareToken null, token_string, (err, isMatch) ->
+        token.compareToken tokenId, token_string, (err, isMatch) ->
           throw err if err
           assert.equal isMatch, true, 'tokens match'
           done()
@@ -82,6 +83,15 @@ describe 'Unit: Token', ->
       token_string = 'some random non-token string'
       token.validate (err) ->
         token.compareToken null, token_string, (err, isMatch) ->
+          throw err if err
+          assert.equal isMatch, false, 'tokens do not match'
+          done()
+    it 'should not match when token_string and token_hash match but token ID does not', (done) ->
+      token = new Token
+      tokenId = 'wrongId1234'
+      token_string = token.token_string
+      token.validate (err) ->
+        token.compareToken tokenId, token_string, (err, isMatch) ->
           throw err if err
           assert.equal isMatch, false, 'tokens do not match'
           done()
