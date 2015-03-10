@@ -1,5 +1,5 @@
 {
-  "name": "restify-auth-boilerplate",
+  "name": "restify-mongoose-passport-token-auth-example",
   "version": "0.0.0",
   "dependencies": {
     "underscore": "",
@@ -17,7 +17,7 @@
     "chai": "",
     "supertest": "",
     "mocha-lcov-reporter": "",
-    "coffee-coverage": "",
+    "coffee-coverage": "0.4.4",
     "coveralls": ""
   },
   "scripts": {

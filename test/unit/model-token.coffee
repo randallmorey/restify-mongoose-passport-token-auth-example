@@ -8,10 +8,10 @@ describe 'Unit: Token', ->
   tokenExpirationTimeout = parseInt process.env.TOKEN_EXPIRATION_TIMEOUT_MILLISECONDS, 10
   
   describe 'defaults', ->
-    it 'should include a 128-character token_string', ->
+    it 'should include a 256-character token_string', ->
       token = new Token
       assert.isString token.token_string, 'token_string is a string'
-      assert.lengthOf token.token_string, 128, 'token_string is 128 characters'
+      assert.lengthOf token.token_string, 256, 'token_string is 256 characters'
     it 'should include a revoked boolean that defaults to false', ->
       token = new Token
       assert.equal token.revoked, false, 'token is not revoked by default'
@@ -71,9 +71,10 @@ describe 'Unit: Token', ->
   describe 'compareToken', ->
     it 'should match when token_string and token_hash match', (done) ->
       token = new Token
+      tokenId = token._id
       token_string = token.token_string
       token.validate (err) ->
-        token.compareToken token_string, (err, isMatch) ->
+        token.compareToken tokenId, token_string, (err, isMatch) ->
           throw err if err
           assert.equal isMatch, true, 'tokens match'
           done()
@@ -81,7 +82,16 @@ describe 'Unit: Token', ->
       token = new Token
       token_string = 'some random non-token string'
       token.validate (err) ->
-        token.compareToken token_string, (err, isMatch) ->
+        token.compareToken null, token_string, (err, isMatch) ->
+          throw err if err
+          assert.equal isMatch, false, 'tokens do not match'
+          done()
+    it 'should not match when token_string and token_hash match but token ID does not', (done) ->
+      token = new Token
+      tokenId = 'wrongId1234'
+      token_string = token.token_string
+      token.validate (err) ->
+        token.compareToken tokenId, token_string, (err, isMatch) ->
           throw err if err
           assert.equal isMatch, false, 'tokens do not match'
           done()
