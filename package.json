@@ -1,10 +1,10 @@
 {
-  "name": "restify-auth-boilerplate",
+  "name": "restify-mongoose-passport-token-auth-example",
   "version": "0.0.0",
   "dependencies": {
     "underscore": "",
     "bcrypt": "",
-    "coffee-script": "",
+    "coffee-script": "1.8.0",
     "dotenv": "",
     "mongoose": "",
     "restify": "",
@@ -13,12 +13,12 @@
     "passport-http-bearer": ""
   },
   "devDependencies": {
-    "mocha": "",
-    "chai": "",
-    "supertest": "",
-    "mocha-lcov-reporter": "",
-    "coffee-coverage": "",
-    "coveralls": ""
+    "mocha": "1.21.4",
+    "chai": "1.9.1",
+    "supertest": "0.13.0",
+    "mocha-lcov-reporter": "0.0.1",
+    "coffee-coverage": "0.4.2",
+    "coveralls": "2.11.1"
   },
   "scripts": {
     "start": "./node_modules/coffee-script/bin/coffee app.coffee",
