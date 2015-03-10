@@ -45,12 +45,12 @@ UserSchema.pre 'validate', (next) ->
 UserSchema.post 'validate', ->
   @password = undefined if @password
 
-UserSchema.statics.findByToken = (candidateToken, next) ->
+UserSchema.statics.findByToken = (candidateTokenId, candidateToken, next) ->
   User.find (err, users) ->
     compareOrNext = ->
       if users.length
         user = users.pop()
-        user.compareToken candidateToken, (err, isMatch) ->
+        user.compareToken candidateTokenId, candidateToken, (err, isMatch) ->
           return next err if err
           if isMatch
             next null, user
@@ -87,12 +87,12 @@ UserSchema.methods.issueToken = (next) ->
       @save (err) ->
         next err, newToken, oldToken, tokenString
 
-UserSchema.methods.compareToken = (candidateToken, next) ->
+UserSchema.methods.compareToken = (candidateTokenId, candidateToken, next) ->
   @populate 'token', (err) =>
     return next err if err
     token = @token
     if token
-      token.compareToken candidateToken, next
+      token.compareToken candidateTokenId, candidateToken, next
     else
       next null, false
 

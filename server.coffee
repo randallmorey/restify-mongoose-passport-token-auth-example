@@ -15,13 +15,13 @@ server
   .use passport.initialize()
 
 # /auth/login
-server.post '/auth/token',
+server.post '/tokens',
   passport.authenticate('basic', session: false),
   (req, res, next) ->
-    res.send 201, {token_string: req.user.token_string}
+    res.send 201, req.user.token
 
 # /auth/logout
-server.del '/auth/token',
+server.del '/tokens',
   passport.authenticate('bearer', session: false),
   (req, res, next) ->
     req.user.revokeToken (err) ->
