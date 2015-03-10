@@ -98,7 +98,7 @@ describe 'Integration: User', ->
   describe 'compareToken', ->
     it 'should not match when user has no token', (done) ->
       user = new User email: 'test@test.com', password: 'test1234'
-      user.compareToken 'random12345', (err, isMatch) ->
+      user.compareToken null, 'random12345', (err, isMatch) ->
         throw err if err
         assert.equal isMatch, false, 'candidate token does not match'
         done()
@@ -106,7 +106,7 @@ describe 'Integration: User', ->
       user = new User email: 'test@test.com', password: 'test1234'
       user.issueToken (err) ->
         throw err if err
-        user.compareToken 'random12345', (err, isMatch) ->
+        user.compareToken null, 'random12345', (err, isMatch) ->
           throw err if err
           assert.equal isMatch, false, 'candidate token does not match'
           done()
@@ -114,7 +114,7 @@ describe 'Integration: User', ->
       user = new User email: 'test@test.com', password: 'test1234'
       user.issueToken (err, token, oldToken, tokenString) ->
         throw err if err
-        user.compareToken tokenString, (err, isMatch) ->
+        user.compareToken null, tokenString, (err, isMatch) ->
           throw err if err
           assert.equal isMatch, true, 'candidate token matches'
           done()
@@ -129,15 +129,15 @@ describe 'Integration: User', ->
         user2.issueToken (err, token, oldToken, tokenString) ->
           throw err if err
           user2TokenString = tokenString
-          User.findByToken user1TokenString, (err, user) ->
+          User.findByToken null, user1TokenString, (err, user) ->
             assert.equal user.id, user1.id, 'user was correctly found by token'
-            User.findByToken user2TokenString, (err, user) ->
+            User.findByToken null, user2TokenString, (err, user) ->
               assert.equal user.id, user2.id, 'user was correctly found by token'
               done()
     it 'should not return any user when no match is found', (done) ->
       user = new User email: 'test@test.com', password: 'test1234'
       user.issueToken (err) ->
         throw err if err
-        User.findByToken 'nosuchtokenstring', (err, user) ->
+        User.findByToken null, 'nosuchtokenstring', (err, user) ->
           assert.isUndefined user, 'no matching user was found'
           done()

@@ -6,6 +6,6 @@ module.exports = new BearerStrategy passReqToCallback: true,
     decodedToken = new Buffer(tokenString, 'base64').toString().split ':'
     tokenId = decodedToken[0]
     token = decodedToken[1]
-    User.findByToken token, (err, user) ->
+    User.findByToken null, token, (err, user) ->
       return done null, false, message: 'Invalid token' if !user
       done null, user

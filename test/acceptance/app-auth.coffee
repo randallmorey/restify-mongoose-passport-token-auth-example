@@ -61,7 +61,7 @@ describe 'Acceptance: Auth', ->
             User.find (err, users) ->
               throw err if err
               decodedToken = TokenHelper.decodeTokenString res.body.token_string
-              users[0].compareToken decodedToken.token_string, (err, isMatch) ->
+              users[0].compareToken null, decodedToken.token_string, (err, isMatch) ->
                 throw new Error 'response token does not match assigned user token' if !isMatch
                 done err
       it 'should revoke a previously assigned user token and return a new one [201]', (done) ->
@@ -86,10 +86,10 @@ describe 'Acceptance: Auth', ->
                 throw new Error 'old and new token strings match' if oldTokenString == newTokenString
                 User.find (err, users) ->
                   throw err if err
-                  users[0].compareToken newDecodedToken.token_string, (err, isMatch) ->
+                  users[0].compareToken null, newDecodedToken.token_string, (err, isMatch) ->
                     throw err if err
                     throw new Error 'response token does not match assigned user token' if !isMatch
-                    users[0].compareToken oldDecodedToken.token_string, (err, isMatch) ->
+                    users[0].compareToken null, oldDecodedToken.token_string, (err, isMatch) ->
                       throw err if err
                       throw new Error 'old token matches assigned user token, but should not' if isMatch
                       Token.find (err, tokens) ->

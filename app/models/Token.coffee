@@ -55,7 +55,7 @@ TokenSchema.methods.isRevoked = ->
 TokenSchema.methods.isActive = ->
   !@isExpired() and !@isRevoked()
 
-TokenSchema.methods.compareToken = (candidateToken, next) ->
+TokenSchema.methods.compareToken = (candidateTokenId, candidateToken, next) ->
   bcrypt.compare candidateToken, @token_hash, (err, isMatch) ->
     next err, isMatch
 

@@ -73,7 +73,7 @@ describe 'Unit: Token', ->
       token = new Token
       token_string = token.token_string
       token.validate (err) ->
-        token.compareToken token_string, (err, isMatch) ->
+        token.compareToken null, token_string, (err, isMatch) ->
           throw err if err
           assert.equal isMatch, true, 'tokens match'
           done()
@@ -81,7 +81,7 @@ describe 'Unit: Token', ->
       token = new Token
       token_string = 'some random non-token string'
       token.validate (err) ->
-        token.compareToken token_string, (err, isMatch) ->
+        token.compareToken null, token_string, (err, isMatch) ->
           throw err if err
           assert.equal isMatch, false, 'tokens do not match'
           done()
