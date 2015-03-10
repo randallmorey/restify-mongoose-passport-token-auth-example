@@ -38,11 +38,11 @@ describe 'Acceptance: Auth', ->
   afterEach (done) ->
     DatabaseHelper.disconnect done
   
-  describe '/auth/token', ->
+  describe '/tokens', ->
     describe 'POST', ->
       it 'should create and return a new user token [201]', (done) ->
         supertest app
-          .post '/auth/token'
+          .post '/tokens'
           .set 'Authorization', basicAuthHeader
           .send()
           .expect 201
@@ -51,7 +51,7 @@ describe 'Acceptance: Auth', ->
           .end done
       it 'should create a token that matches the assigned user token [201]', (done) ->
         supertest app
-          .post '/auth/token'
+          .post '/tokens'
           .set 'Authorization', basicAuthHeader
           .send()
           .expect 201
@@ -64,7 +64,7 @@ describe 'Acceptance: Auth', ->
                 done err
       it 'should revoke a previously assigned user token and return a new one [201]', (done) ->
         supertest app
-          .post '/auth/token'
+          .post '/tokens'
           .set 'Authorization', basicAuthHeader
           .send()
           .expect 201
@@ -72,7 +72,7 @@ describe 'Acceptance: Auth', ->
             throw err if err
             oldTokenString = res.body.token_string
             supertest app
-              .post '/auth/token'
+              .post '/tokens'
               .set 'Authorization', basicAuthHeader
               .send()
               .expect 201
@@ -93,14 +93,14 @@ describe 'Acceptance: Auth', ->
                         done err
       it 'should fail when invalid password is passed [401]', (done) ->
         supertest app
-          .post '/auth/token'
+          .post '/tokens'
           .set 'Authorization', basicAuthInvalidHeader
           .send()
           .expect 401
           .end done
       it 'should fail when user does not exist [401]', (done) ->
         supertest app
-          .post '/auth/token'
+          .post '/tokens'
           .set 'Authorization', basicAuthNonExistentHeader
           .send()
           .expect 401
@@ -115,7 +115,7 @@ describe 'Acceptance: Auth', ->
           ].join ' '
           throw new Error 'user token not issued' if !token or !tokenString
           supertest app
-            .delete '/auth/token'
+            .delete '/tokens'
             .set 'Authorization', bearerAuthHeader
             .send()
             .expect 204
@@ -126,14 +126,14 @@ describe 'Acceptance: Auth', ->
                 done err
       it 'should fail when no token is passed [401]', (done) ->
         supertest app
-          .post '/auth/token'
+          .post '/tokens'
           .set 'Authorization', 'Bearer '
           .send()
           .expect 401
           .end done
       it 'should fail when invalid token is passed [401]', (done) ->
         supertest app
-          .post '/auth/token'
+          .post '/tokens'
           .set 'Authorization', 'Bearer nosuchtoken'
           .send()
           .expect 401
