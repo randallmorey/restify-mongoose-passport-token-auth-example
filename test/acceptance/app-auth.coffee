@@ -113,9 +113,14 @@ describe 'Acceptance: Auth', ->
     describe 'DELETE', ->
       it 'should revoke the matched user token [204]', (done) ->
         user.issueToken (err, token, oldToken, tokenString) ->
+          tokenId = token._id
+          encodedToken = new Buffer([
+            tokenId
+            tokenString
+          ].join ':').toString 'base64'
           bearerAuthHeader = [
             'Bearer'
-            new Buffer("#{tokenString}").toString('base64')
+            encodedToken
           ].join ' '
           throw new Error 'user token not issued' if !token or !tokenString
           supertest app
